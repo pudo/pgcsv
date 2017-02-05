@@ -78,6 +78,7 @@ def load_data(fh, conn, dialect, table_name, headers):
         columns = ', '.join(columns)
         query = COPY_STMT.format(table_name, columns, dialect.delimiter)
         cursor.copy_expert(query, fh, size=8192 * 10)
+    conn.commit()
 
 
 @click.command()
