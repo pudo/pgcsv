@@ -30,7 +30,7 @@ setup(
         'click',
         'psycopg2',
         'unicodecsv',
-        'normality'
+        'tabulate'
     ],
     tests_require=[
         'nose',
