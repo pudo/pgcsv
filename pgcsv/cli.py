@@ -9,11 +9,10 @@ from itertools import count
 from unicodecsv import reader, Sniffer
 from tabulate import tabulate
 
-# SCHEMA_QUERY = sql.SQL("SELECT column_name FROM information_schema.columns WHERE table_schema = {} AND table_name = {}")  # noqa
-
 CREATE_STMT = u"""CREATE TABLE IF NOT EXISTS {} ({});"""
 ALTER_STMT = u"""ALTER TABLE {} ADD COLUMN "{}" TEXT;"""
 COMMENT_STMT = u"""COMMENT ON COLUMN {}."{}" IS %s;"""
+SCHEMA_STMT = u"""SELECT column_name FROM information_schema.columns WHERE table_name = %s; """  # noqa
 COPY_STMT = u"""COPY {} ({}) FROM STDIN WITH CSV HEADER NULL AS '' DELIMITER AS '{}'"""  # noqa
 
 
@@ -59,12 +58,12 @@ def adapt_schema(conn, table_name, headers):
         query = CREATE_STMT.format(table_name, columns)
         cursor.execute(query)
 
+        cursor.execute(SCHEMA_STMT, (table_name,))
+        columns = [c[0].decode(conn.encoding) for c in cursor.fetchall()]
         for column, label in headers.items():
-            try:
+            if column not in columns:
                 query = ALTER_STMT.format(table_name, column)
                 cursor.execute(query)
-            except psycopg2.Error as err:
-                print err.pgcode, err.pgerror
             query = COMMENT_STMT.format(table_name, column)
             cursor.execute(query, (label, ))
 
