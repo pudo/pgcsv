@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pgcsv',
-    version='0.1',
+    version='0.2',
     description="CSV to Postgres data puncher.",
     long_description="",
     classifiers=[
@@ -28,8 +28,9 @@ setup(
     install_requires=[
         'six',
         'click',
-        'psycopg2',
-        'unicodecsv',
+        'psycopg2>=2.7',
+        'backports.csv',
+        'normality',
         'tabulate'
     ],
     tests_require=[
