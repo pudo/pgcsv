@@ -1,7 +1,15 @@
 
+all: clean dists release
 
-upload:
-	python setup.py sdist bdist_wheel upload -r pypi
+dists:
+	python setup.py sdist bdist_wheel
 
-register:
-	python setup.py register -r pypi
+release: dists
+	twine upload dist/*
+
+clean:
+	rm -rf dist build .eggs
+	find . -name '*.egg-info' -exec rm -fr {} +
+	find . -name '*.egg' -exec rm -f {} +
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
