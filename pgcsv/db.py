@@ -8,16 +8,16 @@ from pgcsv.util import normalize_column
 
 class Database(object):
 
-    def __init__(self, uri, table, proxy):
+    def __init__(self, uri, table, headers):
         self.conn = connect(uri)
         self.table = normalize_column(table)
-        self.proxy = proxy
+        self._raw_headers = headers
 
     @property
     def headers(self):
         if not hasattr(self, '_headers'):
             self._headers = OrderedDict()
-            for name in self.proxy.headers:
+            for name in self._raw_headers:
                 normalized = normalize_column(name)
                 if normalized is None or not len(normalized):
                     normalized = 'column'
@@ -64,13 +64,16 @@ class Database(object):
                 cursor.execute(stmt)
         self.conn.commit()
 
-    def load(self):
+    def load(self, fh, delimiter):
         with self.conn.cursor() as cursor:
             headers = self.headers.keys()
-            stmt = SQL("COPY {} ({}) FROM STDIN WITH CSV HEADER NULL AS ''")
+            stmt = SQL("COPY {} ({}) FROM STDIN "
+                       "WITH CSV HEADER DELIMITER AS {} NULL AS ''")
             columns = Composed([Identifier(c) for c in headers])
             columns = columns.join(', ')
-            stmt = stmt.format(Identifier(self.table), columns)
-            # print stmt.as_string(cursor)
-            cursor.copy_expert(stmt, self.proxy)
+            stmt = stmt.format(Identifier(self.table),
+                               columns,
+                               Literal(delimiter))
+            print stmt.as_string(cursor)
+            cursor.copy_expert(stmt, fh)
         self.conn.commit()

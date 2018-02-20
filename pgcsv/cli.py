@@ -1,7 +1,7 @@
 import click
 from tabulate import tabulate
 
-from pgcsv.csv import CSVProxy
+from pgcsv.csv import open_csv
 from pgcsv.db import Database
 
 
@@ -14,10 +14,12 @@ from pgcsv.db import Database
 @click.argument('csv_file', type=click.Path(exists=True))
 def main(db, encoding, delimiter, drop, table, csv_file):
     """Load a CSV file into a Postgres database."""
-    proxy = CSVProxy(csv_file, encoding=encoding, delimiter=delimiter)
-    db = Database(db, table, proxy)
+    fh, delimiter, headers = open_csv(csv_file,
+                                      encoding=encoding,
+                                      delimiter=delimiter)
+    db = Database(db, table, headers)
     if drop:
         db.drop()
     print tabulate(db.headers.items(), headers=['Column', 'CSV Header'])
     db.sync()
-    db.load()
+    db.load(fh, delimiter)
