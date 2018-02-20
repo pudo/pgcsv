@@ -23,4 +23,5 @@ def open_csv(file_path, encoding=None, delimiter=None):
     for row in reader:
         headers = row
         break
+    fh.seek(0)
     return fh, delimiter, headers
