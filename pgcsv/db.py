@@ -49,7 +49,7 @@ class Database(object):
                        "WHERE table_name = %s;")  # noqa
             cursor.execute(stmt, (self.table,))
             columns = [c[0] for c in cursor.fetchall()]
-            columns = [c.decode(self.conn.encoding) for c in columns]
+            # columns = [c.decode(self.conn.encoding) for c in columns]
             for column, label in self.headers.items():
                 if column not in columns:
                     stmt = SQL("ALTER TABLE {} ADD COLUMN {} TEXT;")
@@ -66,7 +66,7 @@ class Database(object):
 
     def load(self, fh, delimiter):
         with self.conn.cursor() as cursor:
-            headers = self.headers.keys()
+            headers = list(self.headers.keys())
             stmt = SQL("COPY {} ({}) FROM STDIN "
                        "WITH CSV HEADER DELIMITER AS {} NULL AS ''")
             columns = Composed([Identifier(c) for c in headers])
@@ -74,6 +74,6 @@ class Database(object):
             stmt = stmt.format(Identifier(self.table),
                                columns,
                                Literal(delimiter))
-            print stmt.as_string(cursor)
+            print(stmt.as_string(cursor))
             cursor.copy_expert(stmt, fh)
         self.conn.commit()

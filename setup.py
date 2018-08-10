@@ -3,16 +3,17 @@ from setuptools import setup, find_packages
 
 setup(
     name='pgcsv',
-    version='0.3',
+    version='0.4',
     description="CSV to Postgres data puncher.",
     long_description="",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.7'
     ],
     keywords='files walk index survey',
     author='Friedrich Lindenberh',

@@ -7,7 +7,7 @@ SAMPLE_SIZE = 8192 * 10
 
 def open_csv(file_path, encoding=None, delimiter=None):
     if encoding is None:
-        with open(file_path, 'r') as fh:
+        with io.open(file_path, 'rb') as fh:
             data = fh.read(SAMPLE_SIZE)
             encoding = guess_encoding(data)
 
