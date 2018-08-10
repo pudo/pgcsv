@@ -20,6 +20,6 @@ def main(db, encoding, delimiter, drop, table, csv_file):
     db = Database(db, table, headers)
     if drop:
         db.drop()
-    print tabulate(db.headers.items(), headers=['Column', 'CSV Header'])
+    print(tabulate(list(db.headers.items()), headers=['Column', 'CSV Header']))
     db.sync()
     db.load(fh, delimiter)
